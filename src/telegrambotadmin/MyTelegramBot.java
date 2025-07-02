@@ -20,15 +20,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class MyTelegramBot extends TelegramLongPollingBot {
 
- @Override
+@Override
 public void onUpdateReceived(Update update) {
-     if (update.hasMessage()) {
+    if (update.hasMessage()) {
         String chatId = update.getMessage().getChatId().toString();
 
-        // 1️⃣ Cek dulu apakah user mengirim Contact:
+        // 1️⃣ Cek apakah user mengirim contact
         if (update.getMessage().hasContact()) {
             String phoneNumber = update.getMessage().getContact().getPhoneNumber();
-
             try {
                 Connection conn = DatabaseConnection.getConnection();
                 String sql = "UPDATE member SET nomor_hp=? WHERE chat_id=?";
@@ -43,37 +42,49 @@ public void onUpdateReceived(Update update) {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return;  // selesai setelah menerima kontak
+            return;  // selesai setelah menerima contact
         }
 
-        // 2️⃣ Setelah cek contact, baru kita proses pesan teks:
+        // 2️⃣ Proses pesan teks
         if (update.getMessage().hasText()) {
             String pesan = update.getMessage().getText();
             String username = update.getMessage().getFrom().getUserName();
 
-            // Cek apakah sudah terdaftar
+            // Cek apakah user sudah terdaftar
             if (!sudahTerdaftar(chatId)) {
                 simpanMemberBaru(chatId, username);
             }
 
-            // Simpan history
-            simpanHistory(chatId, pesan);
+            // Simpan history USER
+            simpanHistory(chatId, pesan, "USER");
 
+            // Cek apakah pesan /menu
             if (pesan.equalsIgnoreCase("/menu")) {
                 String daftarMenu = getAllKeywords();
-                SendMessage msg = new SendMessage(chatId, daftarMenu);
-                try {
-                    execute(msg);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                kirimPesan(chatId, daftarMenu);
+                simpanHistory(chatId, daftarMenu, "BOT");
                 return;
             }
 
-            cekKeyword(chatId, pesan);
+            // 3️⃣ Cek apakah ada di kata kunci
+            keywordService keywordService = new keywordService();
+            String jawabanKataKunci = keywordService.cariJawaban(pesan);
+
+
+            if (jawabanKataKunci != null) {
+                // Jika ditemukan di kata kunci
+                kirimPesan(chatId, jawabanKataKunci);
+                simpanHistory(chatId, jawabanKataKunci, "BOT");
+            } else {
+                // 4️⃣ Jika tidak ditemukan di kata kunci → panggil Gemini API
+                String aiResponse = GeminiApiService.getGeminiResponse(pesan);
+                kirimPesan(chatId, aiResponse);
+                simpanHistory(chatId, aiResponse, "BOT");
+            }
         }
     }
 }
+
 private void simpanMemberBaru(String chatId, String username) {
     try {
         Connection conn = DatabaseConnection.getConnection();
@@ -144,7 +155,7 @@ private boolean sudahTerdaftar(String chatId) {
     }
 }
 public String getAllKeywords() {
-        StringBuilder daftar = new StringBuilder("Berikut daftar menu:\n");
+        StringBuilder daftar = new StringBuilder("📑 Berikut daftar menu:\n");
         try {
             Connection conn = DatabaseConnection.getConnection();
             String sql = "SELECT keyword FROM keyword";
@@ -177,9 +188,16 @@ private void cekKeyword(String chatId, String pesan) {
             String jawaban = rs.getString("jawaban");
             SendMessage msg = new SendMessage(chatId, jawaban);
             execute(msg);
+
+            // ✅ Tambahkan simpan ke history untuk jawaban bot
+            simpanHistory(chatId, jawaban, "bot");
         } else {
-            SendMessage msg = new SendMessage(chatId, "Maaf, perintah tidak dikenal.");
+            String unknownReply = "Maaf, perintah tidak dikenal.";
+            SendMessage msg = new SendMessage(chatId, unknownReply);
             execute(msg);
+
+            // ✅ Simpan jawaban bot ke history juga
+            simpanHistory(chatId, unknownReply, "bot");
         }
 
         rs.close();
@@ -188,6 +206,7 @@ private void cekKeyword(String chatId, String pesan) {
         e.printStackTrace();
     }
 }
+
 private void kirimMenuUtama(String chatId) {
     SendMessage message = new SendMessage();
     message.setChatId(chatId);
@@ -244,19 +263,21 @@ private void kirimMenuUtama(String chatId) {
 
 
 
-private void simpanHistory(String chatId, String pesan) {
-    try {
-        Connection conn = DatabaseConnection.getConnection();
-        String sql = "INSERT INTO history (chat_id, pesan) VALUES (?, ?)";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, chatId);
-        pst.setString(2, pesan);
-        pst.executeUpdate();
-        pst.close();
-    } catch (Exception e) {
-        e.printStackTrace();
+private void simpanHistory(String chatId, String pesan, String sumber) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            String sql = "INSERT INTO history (chat_id, pesan, sumber) VALUES (?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, chatId);
+            pst.setString(2, pesan);
+            pst.setString(3, sumber);
+            pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-}
+
 
 
     @Override
@@ -268,6 +289,17 @@ private void simpanHistory(String chatId, String pesan) {
     public String getBotToken() {
         return "8199367656:AAEqhEcQ4hLGWHAozUiWxqllstRXtdQxwtY"; // ganti dengan token dari BotFather
     }
+    private void kirimPesanDanLog(String chatId, String pesan) {
+    SendMessage message = new SendMessage();
+    message.setChatId(chatId);
+    message.setText(pesan);
+    try {
+        execute(message);
+        simpanHistory(chatId, pesan, "BOT");
+    } catch (TelegramApiException e) {
+        e.printStackTrace();
+    }
+}
     
     
     public void kirimPesan(String chatId, String pesan) {

@@ -11,6 +11,10 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;     // <-- Tambahkan ini
 import javax.swing.table.DefaultTableModel;
 import telegrambotadmin.KelolaKataKunci;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 
 
@@ -30,13 +34,59 @@ public class AdminPanel extends javax.swing.JFrame {
     public AdminPanel() {
         initComponents();
         loadDataMember();
+        loadPesanKeluarMasuk();
         setLocationRelativeTo(null); 
+        
+        Timer timer = new Timer(2000, new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            loadPesanKeluarMasuk();
+        }
+    });
+    timer.start();
     }
     public void clearInput() {
-    txtNomorHP.setText("");
-    txtUsername.setText("");
-    txtChatId.setText("");
+        txtNomorHP.setText("");
+        txtUsername.setText("");
+        txtChatId.setText("");
+    }
+    public void loadPesanKeluarMasuk() {
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        String sql = """
+            SELECT h.pesan, h.sumber, m.username 
+            FROM history h 
+            LEFT JOIN member m ON h.chat_id = m.chat_id 
+            ORDER BY h.waktu ASC
+            """;
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+
+        StringBuilder chatLog = new StringBuilder();
+        while (rs.next()) {
+            String sumber = rs.getString("sumber");
+            String username = rs.getString("username");
+            String pesan = rs.getString("pesan");
+
+            if (username == null) username = "(unknown)";
+            if ("user".equals(sumber)) {
+    chatLog.append(username).append(" : ").append(pesan).append("\n");
+} else if ("bot".equals(sumber)) {
+    chatLog.append("BOT : ").append(pesan).append("\n");
+} else {
+    // Jika sumber null atau tidak diketahui
+    chatLog.append(username).append(" : ").append(pesan).append("").append("\n");
 }
+
+        }
+        txtpesan.setText(chatLog.toString());
+        rs.close(); pst.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+
+    
     private String selectedChatId = "";
 
 
@@ -91,7 +141,7 @@ public class AdminPanel extends javax.swing.JFrame {
         btnbroadcast = new javax.swing.JToggleButton();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        txtpesan = new javax.swing.JTextArea();
         btnkatakunci = new javax.swing.JToggleButton();
         btndatabase = new javax.swing.JToggleButton();
         jToggleButton4 = new javax.swing.JToggleButton();
@@ -186,9 +236,9 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setText("PESAN KELUAR DAN MASUK");
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane3.setViewportView(jTextArea2);
+        txtpesan.setColumns(20);
+        txtpesan.setRows(5);
+        jScrollPane3.setViewportView(txtpesan);
 
         btnkatakunci.setText("KELOKA KATA KUNCI");
         btnkatakunci.addActionListener(new java.awt.event.ActionListener() {
@@ -534,11 +584,11 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JToggleButton jToggleButton4;
     private javax.swing.JTable tabelMember;
     private javax.swing.JTextField txtChatId;
     private javax.swing.JTextField txtNomorHP;
     private javax.swing.JTextField txtUsername;
+    private javax.swing.JTextArea txtpesan;
     // End of variables declaration//GEN-END:variables
 }

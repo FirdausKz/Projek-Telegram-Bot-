@@ -17,7 +17,7 @@ public class Main {
 
         // jalankan GUI setelah bot jalan
         java.awt.EventQueue.invokeLater(() -> {
-            new AdminPanel().setVisible(true);
+            new frmlogin().setVisible(true);
         });
     }
 }
