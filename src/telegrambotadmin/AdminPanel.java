@@ -32,6 +32,7 @@ public class AdminPanel extends javax.swing.JFrame {
      * Creates new form AdminPanel
      */
     public AdminPanel() {
+        
         initComponents();
         loadDataMember();
         loadPesanKeluarMasuk();
@@ -68,15 +69,13 @@ public class AdminPanel extends javax.swing.JFrame {
             String pesan = rs.getString("pesan");
 
             if (username == null) username = "(unknown)";
-            if ("user".equals(sumber)) {
+            if ("user".equalsIgnoreCase(sumber)) {
     chatLog.append(username).append(" : ").append(pesan).append("\n");
-} else if ("bot".equals(sumber)) {
+} else if ("bot".equalsIgnoreCase(sumber)) {
     chatLog.append("BOT : ").append(pesan).append("\n");
 } else {
-    // Jika sumber null atau tidak diketahui
-    chatLog.append(username).append(" : ").append(pesan).append("").append("\n");
+    chatLog.append(username).append(" : ").append(pesan).append("\n");
 }
-
         }
         txtpesan.setText(chatLog.toString());
         rs.close(); pst.close();
@@ -176,6 +175,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        btndaftar.setBackground(new java.awt.Color(102, 255, 102));
         btndaftar.setText("DAFTAR");
         btndaftar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -183,6 +183,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        btnedit.setBackground(new java.awt.Color(255, 255, 102));
         btnedit.setText("EDIT");
         btnedit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -190,6 +191,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        btnhapus.setBackground(new java.awt.Color(255, 102, 102));
         btnhapus.setText("HAPUS");
         btnhapus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -225,6 +227,7 @@ public class AdminPanel extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
 
+        btnbroadcast.setBackground(new java.awt.Color(102, 255, 102));
         btnbroadcast.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnbroadcast.setText("BROADCAST");
         btnbroadcast.addActionListener(new java.awt.event.ActionListener() {
@@ -240,6 +243,7 @@ public class AdminPanel extends javax.swing.JFrame {
         txtpesan.setRows(5);
         jScrollPane3.setViewportView(txtpesan);
 
+        btnkatakunci.setBackground(new java.awt.Color(102, 255, 255));
         btnkatakunci.setText("KELOKA KATA KUNCI");
         btnkatakunci.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -247,6 +251,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        btndatabase.setBackground(new java.awt.Color(102, 153, 255));
         btndatabase.setText("DATABASE PESAN");
         btndatabase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -254,6 +259,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        jToggleButton4.setBackground(new java.awt.Color(255, 102, 102));
         jToggleButton4.setText("KELUAR");
         jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -261,6 +267,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
 
+        btnrefresh.setBackground(new java.awt.Color(51, 255, 204));
         btnrefresh.setText("REFRESH");
         btnrefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -454,6 +461,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
     private void tabelMemberMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelMemberMouseClicked
         // TODO add your handling code here:
+        txtChatId.setEditable(false);
          int row = tabelMember.getSelectedRow();
     if (row != -1) {
         selectedChatId = tabelMember.getValueAt(row, 2).toString();
@@ -528,6 +536,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
     private void txtChatIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtChatIdActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_txtChatIdActionPerformed
 
     /**

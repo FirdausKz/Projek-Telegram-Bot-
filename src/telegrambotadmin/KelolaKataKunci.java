@@ -106,6 +106,7 @@ public class KelolaKataKunci extends javax.swing.JFrame {
         txtJawaban.setRows(5);
         jScrollPane1.setViewportView(txtJawaban);
 
+        btnsimpan.setBackground(new java.awt.Color(102, 255, 102));
         btnsimpan.setText("SIMPAN");
         btnsimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,6 +114,7 @@ public class KelolaKataKunci extends javax.swing.JFrame {
             }
         });
 
+        btnedit.setBackground(new java.awt.Color(255, 255, 102));
         btnedit.setText("EDIT");
         btnedit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,6 +122,7 @@ public class KelolaKataKunci extends javax.swing.JFrame {
             }
         });
 
+        btnhapus.setBackground(new java.awt.Color(255, 102, 102));
         btnhapus.setText("HAPUS");
         btnhapus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -147,6 +150,7 @@ public class KelolaKataKunci extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(tabelKeyword);
 
+        btnkembali.setBackground(new java.awt.Color(102, 255, 255));
         btnkembali.setText("KEMBALI");
         btnkembali.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -259,9 +263,6 @@ int row = tabelKeyword.getSelectedRow();
         String newKeyword = txtKeyword.getText().trim();
         String newJawaban = txtJawaban.getText().trim();
 
-        if (newKeyword.startsWith("/")) {
-            newKeyword = newKeyword.substring(1);
-        }
 
         try {
             Connection conn = DatabaseConnection.getConnection();

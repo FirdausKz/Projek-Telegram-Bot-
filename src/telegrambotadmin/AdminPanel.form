@@ -185,6 +185,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btndaftar">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="ff" red="66" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="DAFTAR"/>
       </Properties>
       <Events>
@@ -193,6 +196,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnedit">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="EDIT"/>
       </Properties>
       <Events>
@@ -201,6 +207,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnhapus">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="66" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="HAPUS"/>
       </Properties>
       <Events>
@@ -285,6 +294,9 @@
     </Container>
     <Component class="javax.swing.JToggleButton" name="btnbroadcast">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="ff" red="66" type="rgb"/>
+        </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="12" style="1"/>
         </Property>
@@ -319,6 +331,9 @@
     </Container>
     <Component class="javax.swing.JToggleButton" name="btnkatakunci">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="66" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="KELOKA KATA KUNCI"/>
       </Properties>
       <Events>
@@ -327,6 +342,9 @@
     </Component>
     <Component class="javax.swing.JToggleButton" name="btndatabase">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="99" red="66" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="DATABASE PESAN"/>
       </Properties>
       <Events>
@@ -335,6 +353,9 @@
     </Component>
     <Component class="javax.swing.JToggleButton" name="jToggleButton4">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="66" green="66" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="KELUAR"/>
       </Properties>
       <Events>
@@ -343,6 +364,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnrefresh">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="cc" green="ff" red="33" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="REFRESH"/>
       </Properties>
       <Events>

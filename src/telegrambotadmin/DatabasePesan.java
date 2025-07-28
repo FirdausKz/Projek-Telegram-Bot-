@@ -24,6 +24,8 @@ public class DatabasePesan extends javax.swing.JFrame {
     initComponents();
     loadDataHistory();
     setLocationRelativeTo(null); 
+    loadDataHistory();      // memuat semua pesan
+    loadTanggalOptions();   // memuat tanggal ke combo box
     }
     public void loadDataHistory() {
     DefaultTableModel model = (DefaultTableModel) tabelHistory.getModel();
@@ -49,7 +51,55 @@ public class DatabasePesan extends javax.swing.JFrame {
     } catch (SQLException e) {
         e.printStackTrace();
     }
+    
 }
+    private void loadTanggalOptions() {
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        String sql = "SELECT DISTINCT DATE(waktu) as tanggal FROM history ORDER BY tanggal DESC";
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        comboTanggal.removeAllItems(); // Hapus semua item dulu
+
+        while (rs.next()) {
+            comboTanggal.addItem(rs.getString("tanggal")); // Tambahkan tanggal unik
+        }
+
+        rs.close();
+        st.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+    private void filterByTanggal(String selectedDate) {
+    DefaultTableModel model = (DefaultTableModel) tabelHistory.getModel();
+    model.setRowCount(0);
+
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        String sql = "SELECT * FROM history WHERE DATE(waktu) = ? ORDER BY waktu DESC";
+        java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, selectedDate);
+        ResultSet rs = pst.executeQuery();
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("chat_id"),
+                rs.getString("pesan"),
+                rs.getTimestamp("waktu")
+            });
+        }
+
+        rs.close();
+        pst.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -65,6 +115,7 @@ public class DatabasePesan extends javax.swing.JFrame {
         tabelHistory = new javax.swing.JTable();
         btnkembali = new javax.swing.JButton();
         btnrefresh = new javax.swing.JButton();
+        comboTanggal = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -84,6 +135,7 @@ public class DatabasePesan extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tabelHistory);
 
+        btnkembali.setBackground(new java.awt.Color(255, 102, 102));
         btnkembali.setText("KEMBALI");
         btnkembali.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -91,10 +143,18 @@ public class DatabasePesan extends javax.swing.JFrame {
             }
         });
 
+        btnrefresh.setBackground(new java.awt.Color(102, 255, 204));
         btnrefresh.setText("REFRESH");
         btnrefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnrefreshActionPerformed(evt);
+            }
+        });
+
+        comboTanggal.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        comboTanggal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboTanggalActionPerformed(evt);
             }
         });
 
@@ -111,21 +171,26 @@ public class DatabasePesan extends javax.swing.JFrame {
                         .addComponent(btnkembali))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(comboTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(38, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jLabel1)
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(comboTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnkembali)
                     .addComponent(btnrefresh))
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         pack();
@@ -142,6 +207,14 @@ public class DatabasePesan extends javax.swing.JFrame {
         admin.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnkembaliActionPerformed
+
+    private void comboTanggalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTanggalActionPerformed
+        // TODO add your handling code here:
+    String selectedDate = (String) comboTanggal.getSelectedItem();
+    if (selectedDate != null) {
+        filterByTanggal(selectedDate); // Langsung panggil filter
+    }
+    }//GEN-LAST:event_comboTanggalActionPerformed
 
     /**
      * @param args the command line arguments
@@ -181,6 +254,7 @@ public class DatabasePesan extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnkembali;
     private javax.swing.JButton btnrefresh;
+    private javax.swing.JComboBox<String> comboTanggal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelHistory;
